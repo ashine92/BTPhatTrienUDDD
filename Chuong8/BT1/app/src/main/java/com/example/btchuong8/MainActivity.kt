@@ -1,8 +1,14 @@
 package com.example.btchuong8
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -11,6 +17,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnLoad: Button
     private lateinit var btnSave: Button
     private lateinit var btnRead: Button
+    private lateinit var btnSaveImage: Button
     private lateinit var ivImage: ImageView
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -49,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         btnLoad = findViewById(R.id.btnLoad)
         btnSave = findViewById(R.id.btnSave)
         btnRead = findViewById(R.id.btnRead)
+        btnSaveImage = findViewById(R.id.btnSaveImage)
         ivImage = findViewById(R.id.ivImage)
 
         // Mặc định chọn Picasso
@@ -66,6 +77,10 @@ class MainActivity : AppCompatActivity() {
 
         btnRead.setOnClickListener {
             readUrl()
+        }
+
+        btnSaveImage.setOnClickListener {
+            saveImageToStorage()
         }
     }
 
@@ -135,5 +150,41 @@ class MainActivity : AppCompatActivity() {
 
         etUrl.setText(savedUrl)
         Toast.makeText(this, "Đã đọc URL từ bộ nhớ", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveImageToStorage() {
+        val drawable = ivImage.drawable
+        if (drawable is BitmapDrawable) {
+            val bitmap = drawable.bitmap
+            saveBitmapToFile(bitmap)
+        } else {
+            Toast.makeText(this, "Không có ảnh để lưu", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap) {
+        val imageName = "image_${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream? = null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            this.contentResolver?.also { resolver ->
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, imageName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                }
+                val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                fos = imageUri?.let { resolver.openOutputStream(it) }
+            }
+        } else {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, imageName)
+            fos = FileOutputStream(image)
+        }
+
+        fos?.use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            Toast.makeText(this, "Đã lưu ảnh vào thư viện", Toast.LENGTH_SHORT).show()
+        }
     }
 }
