@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Chuong4b" parent="Theme.Material3.DayNight">
+        <!-- giữ nguyên nội dung bên trong -->
+    </style>
+
+</resources>
