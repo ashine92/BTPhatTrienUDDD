@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Nút tìm kiếm -->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Nút cài đặt -->
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Menu ba chấm -->
+    <item
+        android:id="@+id/action_more"
+        android:title="More"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_refresh"
+                android:title="Refresh" />
+            <item
+                android:id="@+id/action_help"
+                android:title="Help" />
+            <item
+                android:id="@+id/action_check_updates"
+                android:title="Check for Updates" />
+        </menu>
+    </item>
+
+</menu>
